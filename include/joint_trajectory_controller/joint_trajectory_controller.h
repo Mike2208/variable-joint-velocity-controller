@@ -154,14 +154,14 @@ private:
 
   struct TimeData
   {
-	TimeData() : time(0.0), period(0.0), uptime(0.0)/*, velocity_uptime(0.0)*/ {}
+	TimeData() : time(0.0), period(0.0), uptime(0.0), velocity_uptime(0.0) {}
 
     ros::Time     time;   ///< Time of last update cycle
     ros::Duration period; ///< Period of last update cycle
     ros::Time     uptime; ///< Controller uptime. Set to zero at every restart.
 
 	// Speed Service Modification
-	//ros::Time     velocity_uptime; // Simulated uptime
+	ros::Time     velocity_uptime; // Simulated uptime
   };
 
   typedef actionlib::ActionServer<control_msgs::FollowJointTrajectoryAction>                  ActionServer;
@@ -232,8 +232,7 @@ private:
   // Speed Service Modification
   const std::string		velocity_service_name_ = "joint_velocity";
   ros::ServiceServer	velocity_service_;
-  //ros::AsyncSpinner		spinner_ = ros::AsyncSpinner(1);
-  double				velocity_ = 0.01;
+  double				velocity_;
 
   bool velocityService(arm_wave::SetSpeed::Request &req,
 					   arm_wave::SetSpeed::Response &resp);
@@ -266,6 +265,6 @@ private:
 
 } // namespace
 
-//#include <joint_trajectory_controller/joint_trajectory_controller_impl.h>
+#include <joint_trajectory_controller/joint_trajectory_controller_impl.h>
 
 #endif // header guard
