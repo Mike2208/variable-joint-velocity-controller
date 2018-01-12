@@ -186,7 +186,7 @@ JointTrajectoryController<SegmentImpl, HardwareInterface>::
 JointTrajectoryController()
   : verbose_(false), // Set to true during debugging
 	hold_trajectory_ptr_(new Trajectory),
-	velocity_(0.5)
+	velocity_(1.0)
 {
   // The verbose parameter is for advanced use as it breaks real-time safety
   // by enabling ROS logging services
@@ -369,7 +369,7 @@ update(const ros::Time& time, const ros::Duration& period)
   time_data.time   = time;                                     // Cache current time
   time_data.period = period;                                   // Cache current control period
   time_data.uptime = time_data_.readFromRT()->uptime + period; // Update controller uptime
-  time_data.uptime = time_data_.readFromRT()->velocity_uptime + period*curSpeed; // Update velocity controller uptime
+  time_data.velocity_uptime = time_data_.readFromRT()->velocity_uptime + period; // Update velocity controller uptime
   time_data_.writeFromNonRT(time_data); // TODO: Grrr, we need a lock-free data structure here!
 
   // NOTE: It is very important to execute the two above code blocks in the specified sequence: first get current
@@ -388,7 +388,7 @@ update(const ros::Time& time, const ros::Duration& period)
 	// There's no acceleration data available in a joint handle
 
 	typename TrajectoryPerJoint::const_iterator segment_it = sample(curr_traj[i], time_data.velocity_uptime.toSec(), desired_joint_state_);
-	desired_joint_state_.velocity[0] *= curSpeed;
+	desired_joint_state_.velocity[0];
 	if (curr_traj[i].end() == segment_it)
 	{
 	  // Non-realtime safe, but should never happen under normal operation
@@ -573,35 +573,6 @@ updateTrajectoryCommand(const JointTrajectoryConstPtr& msg, RealtimeGoalHandlePt
   // Update currently executing trajectory
   try
   {
-//	// Speed Service Modification
-//	const double curSpeed = this->velocity_;
-
-//	trajectory_msgs::JointTrajectory newTrajectory = *msg;
-//	if(newTrajectory.points.size() > 0)
-//	{
-//		typedef trajectory_msgs::JointTrajectory::_points_type PointStorageType;
-//		typedef PointStorageType::value_type PointsType;
-//		ros::Duration oldTime = newTrajectory.points[0].time_from_start;
-//		ros::Duration nextTime = oldTime;
-//		//for(PointsType &curPoint : newTrajectory.points)
-//		for(size_t i = 0; i < newTrajectory.points.size(); ++i)
-//		{
-//		  PointsType &curPoint = newTrajectory.points[i];
-
-//		  const ros::Duration tmpTime = curPoint.time_from_start;
-//		  curPoint.time_from_start = nextTime;
-//		  nextTime += (tmpTime - oldTime)*(1.0/curSpeed);
-//		  oldTime = tmpTime;
-
-//		  //for(PointsType::_velocities_type &curVelocity : curPoint)
-//		  for(size_t j = 0; j < curPoint.velocities.size(); ++j)
-//		  {
-//			PointsType::_velocities_type::value_type &curVelocity = curPoint.velocities[j];
-//			curVelocity *= curSpeed;
-//		  }
-//		}
-//	}
-
 	TrajectoryPtr traj_ptr(new Trajectory);
 	*traj_ptr = initJointTrajectory<Trajectory>(*msg, next_update_time, options);
 	if (!traj_ptr->empty())
@@ -739,7 +710,7 @@ queryStateService(control_msgs::QueryTrajectoryState::Request&  req,
   // Convert request time to internal monotonic representation
   TimeData* time_data = time_data_.readFromRT();
   const ros::Duration time_offset = req.time - time_data->time;
-  const ros::Time sample_time = time_data->velocity_uptime + time_offset * curSpeed;
+  const ros::Time sample_time = time_data->velocity_uptime + time_offset;
 
   // Sample trajectory at requested time
   TrajectoryPtr curr_traj_ptr;
@@ -759,7 +730,7 @@ queryStateService(control_msgs::QueryTrajectoryState::Request&  req,
 	}
 
 	response_point.position[i]     = state.position[0];
-	response_point.velocity[i]     = state.velocity[0] * curSpeed;
+	response_point.velocity[i]     = state.velocity[0];
 	response_point.acceleration[i] = state.acceleration[0];
   }
 
