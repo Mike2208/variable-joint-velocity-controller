@@ -19,6 +19,9 @@
 
   <build_depend>cmake_modules</build_depend>
 
+  <build_depend>arm_wave</build_depend>
+  <exec_depend>arm_wave</exec_depend>
+
   <depend>actionlib</depend>
   <depend>angles</depend>
   <depend>control_msgs</depend>

@@ -15,6 +15,7 @@ find_package(catkin
     realtime_tools
     control_msgs
     trajectory_msgs
+    arm_wave
 )
 
 # Declare catkin package
@@ -30,6 +31,7 @@ catkin_package(
   realtime_tools
   control_msgs
   trajectory_msgs
+  arm_wave
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
 )
@@ -56,6 +58,7 @@ if(CATKIN_ENABLE_TESTING)
       actionlib
       controller_manager
       xacro
+      arm_wave
   )
 
   find_package(rostest REQUIRED)
@@ -110,19 +113,19 @@ if(CATKIN_ENABLE_TESTING)
 endif()
 
 # Install
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+#install(DIRECTORY include/${PROJECT_NAME}/
+#  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 
-install(DIRECTORY include/trajectory_interface/
-  DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}/trajectory_interface/)
+#install(DIRECTORY include/trajectory_interface/
+#  DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}/trajectory_interface/)
 
-install(TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  )
+#install(TARGETS ${PROJECT_NAME}
+#  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+#  )
 
-install(FILES ros_control_plugins.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+#install(FILES ros_control_plugins.xml
+#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 # TODO: Install test resource files as well?

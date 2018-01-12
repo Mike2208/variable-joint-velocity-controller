@@ -54,6 +54,10 @@
 #include <control_msgs/QueryTrajectoryState.h>
 #include <trajectory_msgs/JointTrajectory.h>
 
+// Speed Service Modification
+#include <arm_wave/SetSpeed.h>
+#include <ros/advertise_service_options.h>
+
 // actionlib
 #include <actionlib/server/action_server.h>
 
@@ -155,6 +159,9 @@ private:
     ros::Time     time;   ///< Time of last update cycle
     ros::Duration period; ///< Period of last update cycle
     ros::Time     uptime; ///< Controller uptime. Set to zero at every restart.
+
+	// Speed Service Modification
+	ros::Time     velocity_uptime; // Simulated uptime
   };
 
   typedef actionlib::ActionServer<control_msgs::FollowJointTrajectoryAction>                  ActionServer;
@@ -222,6 +229,15 @@ private:
   ros::Timer         goal_handle_timer_;
   ros::Time          last_state_publish_time_;
 
+  // Speed Service Modification
+  const std::string		velocity_service_name_ = "joint_velocity";
+  ros::ServiceServer	velocity_service_;
+  //ros::AsyncSpinner		spinner_ = ros::AsyncSpinner(1);
+  double				velocity_ = 0.01;
+
+  bool velocityService(arm_wave::SetSpeed::Request &req,
+					   arm_wave::SetSpeed::Response &resp);
+
   bool updateTrajectoryCommand(const JointTrajectoryConstPtr& msg, RealtimeGoalHandlePtr gh);
   void trajectoryCommandCB(const JointTrajectoryConstPtr& msg);
   void goalCB(GoalHandle gh);
@@ -250,6 +266,6 @@ private:
 
 } // namespace
 
-#include <joint_trajectory_controller/joint_trajectory_controller_impl.h>
+//#include <joint_trajectory_controller/joint_trajectory_controller_impl.h>
 
 #endif // header guard
