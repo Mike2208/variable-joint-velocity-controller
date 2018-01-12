@@ -137,7 +137,7 @@ starting(const ros::Time& time)
   time_data.uptime = ros::Time(0.0);
 
   // Speed Service Modification
-  time_data.velocity_uptime = ros::Time(0.0);
+  time_data.uptime = ros::Time(0.0);
 
   time_data_.initRT(time_data);
 
@@ -369,7 +369,7 @@ update(const ros::Time& time, const ros::Duration& period)
   time_data.time   = time;                                     // Cache current time
   time_data.period = period;                                   // Cache current control period
   time_data.uptime = time_data_.readFromRT()->uptime + period; // Update controller uptime
-  time_data.uptime = time_data_.readFromRT()->velocity_uptime + period*curSpeed; // Update velocity controller uptime
+  //time_data.uptime = time_data_.readFromRT()->velocity_uptime + period*curSpeed; // Update velocity controller uptime
   time_data_.writeFromNonRT(time_data); // TODO: Grrr, we need a lock-free data structure here!
 
   // NOTE: It is very important to execute the two above code blocks in the specified sequence: first get current
@@ -387,7 +387,7 @@ update(const ros::Time& time, const ros::Duration& period)
 	current_state_.velocity[i] = joints_[i].getVelocity();
 	// There's no acceleration data available in a joint handle
 
-	typename TrajectoryPerJoint::const_iterator segment_it = sample(curr_traj[i], time_data.velocity_uptime.toSec(), desired_joint_state_);
+	typename TrajectoryPerJoint::const_iterator segment_it = sample(curr_traj[i], time_data.uptime.toSec(), desired_joint_state_);
 	if (curr_traj[i].end() == segment_it)
 	{
 	  // Non-realtime safe, but should never happen under normal operation
@@ -412,7 +412,7 @@ update(const ros::Time& time, const ros::Duration& period)
 	if (rt_segment_goal && rt_segment_goal == rt_active_goal_)
 	{
 	  // Check tolerances
-	  if (time_data.velocity_uptime.toSec() < segment_it->endTime())
+	  if (time_data.uptime.toSec() < segment_it->endTime())
 	  {
 		// Currently executing a segment: check path tolerances
 		const SegmentTolerancesPerJoint<Scalar>& joint_tolerances = segment_it->getTolerances();
@@ -436,7 +436,7 @@ update(const ros::Time& time, const ros::Duration& period)
 		  ROS_DEBUG_STREAM_THROTTLE_NAMED(1,name_,"Finished executing last segment, checking goal tolerances");
 
 		// Controller uptime
-		const ros::Time velocity_uptime = time_data_.readFromRT()->velocity_uptime;
+		const ros::Time uptime = time_data_.readFromRT()->uptime;
 
 		// Checks that we have ended inside the goal tolerances
 		const SegmentTolerancesPerJoint<Scalar>& tolerances = segment_it->getTolerances();
@@ -446,7 +446,7 @@ update(const ros::Time& time, const ros::Duration& period)
 		{
 		  successful_joint_traj_[i] = 1;
 		}
-		else if (velocity_uptime.toSec() < segment_it->endTime() + tolerances.goal_time_tolerance)
+		else if (uptime.toSec() < segment_it->endTime() + tolerances.goal_time_tolerance)
 		{
 		  // Still have some time left to meet the goal state tolerances
 		}
@@ -551,7 +551,7 @@ updateTrajectoryCommand(const JointTrajectoryConstPtr& msg, RealtimeGoalHandlePt
   // Hold current position if trajectory is empty
   if (msg->points.empty())
   {
-	setHoldPosition(time_data->velocity_uptime, gh);
+	setHoldPosition(time_data->uptime, gh);
 	ROS_DEBUG_NAMED(name_, "Empty trajectory command, stopping.");
 	return true;
   }
@@ -710,10 +710,10 @@ cancelCB(GoalHandle gh)
 	rt_active_goal_.reset();
 
 	// Controller uptime
-	const ros::Time velocity_uptime = time_data_.readFromRT()->velocity_uptime;
+	const ros::Time uptime = time_data_.readFromRT()->uptime;
 
 	// Enter hold current position mode
-	setHoldPosition(velocity_uptime);
+	setHoldPosition(uptime);
 	ROS_DEBUG_NAMED(name_, "Canceling active action goal because cancel callback recieved from actionlib.");
 
 	// Mark the current goal as canceled
@@ -736,7 +736,7 @@ queryStateService(control_msgs::QueryTrajectoryState::Request&  req,
   // Convert request time to internal monotonic representation
   TimeData* time_data = time_data_.readFromRT();
   const ros::Duration time_offset = req.time - time_data->time;
-  const ros::Time sample_time = time_data->velocity_uptime + time_offset;
+  const ros::Time sample_time = time_data->uptime + time_offset;
 
   // Sample trajectory at requested time
   TrajectoryPtr curr_traj_ptr;

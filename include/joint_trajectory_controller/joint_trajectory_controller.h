@@ -154,14 +154,14 @@ private:
 
   struct TimeData
   {
-    TimeData() : time(0.0), period(0.0), uptime(0.0) {}
+	TimeData() : time(0.0), period(0.0), uptime(0.0)/*, velocity_uptime(0.0)*/ {}
 
     ros::Time     time;   ///< Time of last update cycle
     ros::Duration period; ///< Period of last update cycle
     ros::Time     uptime; ///< Controller uptime. Set to zero at every restart.
 
 	// Speed Service Modification
-	ros::Time     velocity_uptime; // Simulated uptime
+	//ros::Time     velocity_uptime; // Simulated uptime
   };
 
   typedef actionlib::ActionServer<control_msgs::FollowJointTrajectoryAction>                  ActionServer;
