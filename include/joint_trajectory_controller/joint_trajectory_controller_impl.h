@@ -369,7 +369,7 @@ update(const ros::Time& time, const ros::Duration& period)
   time_data.time   = time;                                     // Cache current time
   time_data.period = period;                                   // Cache current control period
   time_data.uptime = time_data_.readFromRT()->uptime + period; // Update controller uptime
-  time_data.velocity_uptime = time_data_.readFromRT()->velocity_uptime + period; // Update velocity controller uptime
+  time_data.velocity_uptime = time_data_.readFromRT()->velocity_uptime + (period * curSpeed); // Update velocity controller uptime
   time_data_.writeFromNonRT(time_data); // TODO: Grrr, we need a lock-free data structure here!
 
   // NOTE: It is very important to execute the two above code blocks in the specified sequence: first get current
@@ -388,7 +388,7 @@ update(const ros::Time& time, const ros::Duration& period)
 	// There's no acceleration data available in a joint handle
 
 	typename TrajectoryPerJoint::const_iterator segment_it = sample(curr_traj[i], time_data.velocity_uptime.toSec(), desired_joint_state_);
-	desired_joint_state_.velocity[0];
+	//desired_joint_state_.velocity[0] *= curSpeed;
 	if (curr_traj[i].end() == segment_it)
 	{
 	  // Non-realtime safe, but should never happen under normal operation
@@ -710,7 +710,7 @@ queryStateService(control_msgs::QueryTrajectoryState::Request&  req,
   // Convert request time to internal monotonic representation
   TimeData* time_data = time_data_.readFromRT();
   const ros::Duration time_offset = req.time - time_data->time;
-  const ros::Time sample_time = time_data->velocity_uptime + time_offset;
+  const ros::Time sample_time = time_data->velocity_uptime + (time_offset * curSpeed);
 
   // Sample trajectory at requested time
   TrajectoryPtr curr_traj_ptr;
