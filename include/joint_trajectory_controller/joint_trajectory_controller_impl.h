@@ -142,13 +142,13 @@ starting(const ros::Time& time)
   time_data_.initRT(time_data);
 
   // Hold current position
-  setHoldPosition(time_data.uptime);
+  setHoldPosition(time_data.velocity_uptime);
 
   // Initialize last state update time
-  last_state_publish_time_ = time_data.uptime;
+  last_state_publish_time_ = time_data.velocity_uptime;
 
   // Hardware interface adapter
-  hw_iface_adapter_.starting(time_data.uptime);
+  hw_iface_adapter_.starting(time_data.velocity_uptime);
 }
 
 template <class SegmentImpl, class HardwareInterface>
@@ -388,7 +388,7 @@ update(const ros::Time& time, const ros::Duration& period)
 	// There's no acceleration data available in a joint handle
 
 	typename TrajectoryPerJoint::const_iterator segment_it = sample(curr_traj[i], time_data.velocity_uptime.toSec(), desired_joint_state_);
-	//desired_joint_state_.velocity[0] *= curSpeed;
+	desired_joint_state_.velocity[0] *= curSpeed;
 	if (curr_traj[i].end() == segment_it)
 	{
 	  // Non-realtime safe, but should never happen under normal operation
@@ -480,7 +480,7 @@ update(const ros::Time& time, const ros::Duration& period)
   }
 
   // Hardware interface adapter: Generate and send commands
-  hw_iface_adapter_.updateCommand(time_data.uptime, time_data.period,
+  hw_iface_adapter_.updateCommand(time_data.velocity_uptime, time_data.period,
 								  desired_state_, state_error_);
 
   // Set action feedback
@@ -498,7 +498,7 @@ update(const ros::Time& time, const ros::Duration& period)
   }
 
   // Publish state
-  publishState(time_data.uptime);
+  publishState(time_data.velocity_uptime);
 }
 
 // Speed Service Modification
@@ -547,7 +547,7 @@ updateTrajectoryCommand(const JointTrajectoryConstPtr& msg, RealtimeGoalHandlePt
   const ros::Time next_update_time = time_data->time + time_data->period;
 
   // Uptime of the next update
-  ros::Time next_update_uptime = time_data->uptime + time_data->period;
+  ros::Time next_update_uptime = time_data->velocity_uptime + (time_data->period * this->velocity_);
 
   // Hold current position if trajectory is empty
   if (msg->points.empty())
