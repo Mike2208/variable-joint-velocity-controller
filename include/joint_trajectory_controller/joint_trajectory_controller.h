@@ -55,7 +55,7 @@
 #include <trajectory_msgs/JointTrajectory.h>
 
 // Speed Service Modification
-#include <arm_wave/SetSpeed.h>
+#include <tracking_fusion/SetSpeed.h>
 #include <ros/advertise_service_options.h>
 
 // actionlib
@@ -234,8 +234,8 @@ private:
   ros::ServiceServer	velocity_service_;
   double				velocity_;
 
-  bool velocityService(arm_wave::SetSpeed::Request &req,
-					   arm_wave::SetSpeed::Response &resp);
+  bool velocityService(tracking_fusion::SetSpeed::Request &req,
+					   tracking_fusion::SetSpeed::Response &resp);
 
   bool updateTrajectoryCommand(const JointTrajectoryConstPtr& msg, RealtimeGoalHandlePtr gh);
   void trajectoryCommandCB(const JointTrajectoryConstPtr& msg);

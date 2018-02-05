@@ -15,7 +15,7 @@ find_package(catkin
     realtime_tools
     control_msgs
     trajectory_msgs
-    arm_wave
+    tracking_fusion
 )
 
 # Declare catkin package
@@ -31,7 +31,7 @@ catkin_package(
   realtime_tools
   control_msgs
   trajectory_msgs
-  arm_wave
+  tracking_fusion
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
 )
@@ -58,7 +58,7 @@ if(CATKIN_ENABLE_TESTING)
       actionlib
       controller_manager
       xacro
-      arm_wave
+      tracking_fusion
   )
 
   find_package(rostest REQUIRED)
