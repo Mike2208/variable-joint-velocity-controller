@@ -388,7 +388,7 @@ update(const ros::Time& time, const ros::Duration& period)
 	// There's no acceleration data available in a joint handle
 
 	typename TrajectoryPerJoint::const_iterator segment_it = sample(curr_traj[i], time_data.velocity_uptime.toSec(), desired_joint_state_);
-	desired_joint_state_.velocity[0] *= curSpeed;
+	desired_joint_state_.velocity[0];
 	if (curr_traj[i].end() == segment_it)
 	{
 	  // Non-realtime safe, but should never happen under normal operation
