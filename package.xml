@@ -18,9 +18,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>cmake_modules</build_depend>
-
-  <build_depend>tracking_fusion</build_depend>
-  <exec_depend>tracking_fusion</exec_depend>
+  <build_depend>message_generation</build_depend>
 
   <depend>actionlib</depend>
   <depend>angles</depend>
@@ -32,6 +30,8 @@
   <depend>roscpp</depend>
   <depend>trajectory_msgs</depend>
   <depend>urdf</depend>
+
+  <exec_depend>message_runtime</exec_depend>
 
   <test_depend>rostest</test_depend>
   <test_depend>controller_manager</test_depend>

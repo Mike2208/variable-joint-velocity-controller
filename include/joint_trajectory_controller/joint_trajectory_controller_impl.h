@@ -504,8 +504,8 @@ update(const ros::Time& time, const ros::Duration& period)
 // Speed Service Modification
 template <class SegmentImpl, class HardwareInterface>
 bool JointTrajectoryController<SegmentImpl, HardwareInterface>::
-velocityService(tracking_fusion::SetSpeed::Request &req,
-					 tracking_fusion::SetSpeed::Response &resp)
+velocityService(joint_trajectory_controller::SetSpeed::Request &req,
+					 joint_trajectory_controller::SetSpeed::Response &resp)
 {
 	if(req.speed >= 0 && req.speed <= 1.0)
 	{

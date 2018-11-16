@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(joint_trajectory_controller)
 
+add_compile_options(-std=c++11)
+
 # Load catkin and all dependencies required for this package
 find_package(catkin
   REQUIRED COMPONENTS
@@ -15,7 +17,20 @@ find_package(catkin
     realtime_tools
     control_msgs
     trajectory_msgs
-    tracking_fusion
+    std_msgs
+    message_generation
+)
+
+## Generate services in the 'srv' folder
+add_service_files(
+  FILES
+  SetSpeed.srv
+)
+
+## Generate added messages and services with any dependencies listed here
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
 )
 
 # Declare catkin package
@@ -31,7 +46,7 @@ catkin_package(
   realtime_tools
   control_msgs
   trajectory_msgs
-  tracking_fusion
+  message_runtime
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
 )
@@ -58,7 +73,6 @@ if(CATKIN_ENABLE_TESTING)
       actionlib
       controller_manager
       xacro
-      tracking_fusion
   )
 
   find_package(rostest REQUIRED)
@@ -113,19 +127,19 @@ if(CATKIN_ENABLE_TESTING)
 endif()
 
 # Install
-#install(DIRECTORY include/${PROJECT_NAME}/
-#  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 
-#install(DIRECTORY include/trajectory_interface/
-#  DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}/trajectory_interface/)
+install(DIRECTORY include/trajectory_interface/
+  DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}/trajectory_interface/)
 
-#install(TARGETS ${PROJECT_NAME}
-#  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-#  )
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )
 
-#install(FILES ros_control_plugins.xml
-#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+install(FILES ros_control_plugins.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 # TODO: Install test resource files as well?
