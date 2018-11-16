@@ -230,7 +230,7 @@ private:
   ros::Time          last_state_publish_time_;
 
   // Speed Service Modification
-  const std::string		velocity_service_name_ = "joint_velocity";
+  std::string		velocity_service_name_ = "joint_velocity";
   ros::ServiceServer	velocity_service_;
   double				velocity_;
 

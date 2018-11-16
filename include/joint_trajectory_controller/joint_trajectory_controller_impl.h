@@ -310,6 +310,7 @@ bool JointTrajectoryController<SegmentImpl, HardwareInterface>::init(HardwareInt
 														 this);
 
   // Speed Service Modification
+  controller_nh.param<std::string>("joint_velocity_service", this->velocity_service_name_, "joint_velocity_service");
   this->velocity_service_ = controller_nh.advertiseService(this->velocity_service_name_,
 														   &JointTrajectoryController::velocityService,
 														   this);
